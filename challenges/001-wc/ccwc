@@ -1,0 +1,63 @@
+#!/bin/python3
+import os
+
+import clize
+
+
+def ccwc(
+    file="-",
+    *,
+    bytes: "c" = False,  # noqa: F821
+    lines: "l" = False,  # noqa: F821
+    words: "w" = False,  # noqa: F821
+    chars: "m" = False,  # noqa: F821
+) -> str:
+    """
+    Print counts (default is lines, words, and bytes) for the file.
+
+    Enabled counts will be printed in order: newline, word, character, byte.
+
+    A word is a non-zero-length sequence of printable characters delimited by white space.
+
+    :param bytes: print the byte counts
+    :param lines: print the newline counts
+    :param words: print the word counts
+    :param chars: print the character counts
+    :param file: file to process (- means STDIN)
+    :return: the specified counts and associated FILE, plus a total line if more than one FILE
+    """
+    if not any([bytes, lines, words, chars]):
+        bytes = lines = words = True
+
+    if file == "-":
+        file = 0
+    else:
+        if not os.path.exists(file):
+            raise clize.UserError(f"{file}: No such file or directory")
+
+    output = ""
+    with open(file, "rb") as f:
+        word_count = char_count = byte_count = 0
+        for i, line in enumerate(f):
+            word_count += len(line.split())
+            char_count += len(line.decode())
+            byte_count += len(line)
+        line_count = i + 1
+
+    if lines:
+        output += str(line_count) + "\t"
+    if words:
+        output += str(word_count) + "\t"
+    if chars:
+        output += str(char_count) + "\t"
+    if bytes:
+        output += str(byte_count) + "\t"
+
+    if file != 0:
+        output += file
+
+    return output
+
+
+if __name__ == "__main__":
+    clize.run(ccwc)
