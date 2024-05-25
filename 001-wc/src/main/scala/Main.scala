@@ -30,6 +30,7 @@ object Main extends App {
         .text("print the byte counts"),
       arg[String]("file")
         .action((file, c) => c.copy(file = file))
+        .optional()
         .text("file to process (defaults to '-' meaning STDIN)"),
       help("help")
         .abbr("h")
