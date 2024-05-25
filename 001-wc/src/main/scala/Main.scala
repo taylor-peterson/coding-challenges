@@ -1,5 +1,7 @@
 import scopt.OParser
 
+import scala.io.StdIn
+
 case class Config(
     lines: Boolean = false,
     words: Boolean = false,
@@ -50,7 +52,7 @@ object Main extends App {
     }
 
     if (config.file == "-") {
-      val lines = io.StdIn.toString.split("""\r\n""")
+      val lines = Iterator.continually(StdIn.readLine).takeWhile(_ != null)
       lines.foreach(line => increment_counts(line))
     } else {
       val path = if (config.file.startsWith("/")) os.Path(config.file) else os.pwd / os.RelPath(config.file)
