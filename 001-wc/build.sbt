@@ -7,10 +7,15 @@ lazy val ccwc = (project in file("."))
     libraryDependencies ++= Seq(
       "com.github.scopt" %% "scopt" % "4.1.0",
       "com.lihaoyi" %% "os-lib" % "0.9.1",
+      "org.scalatest" %% "scalatest" % "3.2.18" % "test",
     ),
     Compile / mainClass := Some("Main"),
 
     // https://typelevel.org/cats-effect/docs/core/native-image
     nativeImageOptions += "--no-fallback",
-    nativeImageVersion := "22.1.0"
+    nativeImageVersion := "22.1.0",
+
+    Test / testOptions += Tests.Argument(
+      TestFrameworks.ScalaTest, s"-DtargetDir=${target.value}"
+    )
   )
