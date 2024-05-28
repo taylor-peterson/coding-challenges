@@ -13,6 +13,7 @@ case class Config(
 object Main extends App {
   private val builder = OParser.builder[Config]
 
+  // TODO add note about default options
   private val parser1 = {
     import builder._
     OParser.sequence(
