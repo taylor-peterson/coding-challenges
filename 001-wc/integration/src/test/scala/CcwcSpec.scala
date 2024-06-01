@@ -54,7 +54,7 @@ class CcwcSpec extends FixtureAnyWordSpec with Matchers with TableDrivenProperty
     }
     "given invalid file path" should {
       "print error message" in { ccwc =>
-        (ccwc + " nonexistent-file").!! shouldBe "nonexistent-file: No such file."
+        (ccwc + " nonexistent-file").!! shouldBe "nonexistent-file: No such file.\n"
       }
     }
     "with stdin" should {

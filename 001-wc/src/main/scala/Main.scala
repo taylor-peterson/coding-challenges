@@ -1,5 +1,6 @@
 import scopt.OParser
 
+import java.io.FileNotFoundException
 import scala.io.StdIn
 
 case class Config(
@@ -64,26 +65,35 @@ object Main extends App {
     )
   }
 
-  private def run(config: Config): Unit = {
-    val counts = if (config.file == "-") {
-      Counts(Iterator.continually(StdIn.readLine).takeWhile(_ != null))
-    } else {
-      // catch FileNotFoundException and print nicer output
-      val path = if (config.file.startsWith("/")) config.file else (os.pwd / os.RelPath(config.file)).toString()
+  private def countsFromFile(file: String): Option[Counts] = {
+    val path = if (file.startsWith("/")) file else (os.pwd / os.RelPath(file)).toString()
+    try {
       val bufferedSource = io.Source.fromFile(path)
       val counts = Counts(bufferedSource.getLines())
       bufferedSource.close()
-      counts
+      Some(counts)
+    } catch {
+      case _: FileNotFoundException => println(s"${file}: No such file."); None
+    }
+  }
+
+  private def run(config: Config): Unit = {
+    val counts = config.file match {
+      case "-" => Some(Counts(Iterator.continually(StdIn.readLine).takeWhile(_ != null)))
+      case file => countsFromFile(file)
     }
 
-    var output = ""
-    if (config.lines) output += counts.lines + "\t"
-    if (config.words) output += counts.words + "\t"
-    if (config.chars) output += counts.chars + "\t"
-    if (config.bytes) output += counts.bytes + "\t"
-    if (config.file != "-") output += config.file
+    if (counts.nonEmpty) {
+      // TODO remove var
+      var output = ""
+      if (config.lines) output += counts.get.lines + "\t"
+      if (config.words) output += counts.get.words + "\t"
+      if (config.chars) output += counts.get.chars + "\t"
+      if (config.bytes) output += counts.get.bytes + "\t"
+      if (config.file != "-") output += config.file
 
-    println(output)
+      println(output)
+    }
   }
 
   OParser.parse(parser, args, Config()) match {
