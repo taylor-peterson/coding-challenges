@@ -27,6 +27,8 @@ class CcwcSpec extends FixtureAnyWordSpec with Matchers {
             |  -c, --bytes  print the byte counts
             |  file         file to process (defaults to '-' meaning STDIN)
             |  -h, --help   prints this usage text
+            |
+            |When no flags are set, line, word, and byte counts will be provided.
             |""".stripMargin
         (ccwc + " -h").!! shouldBe expectedUsage
       }
