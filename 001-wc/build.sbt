@@ -6,7 +6,7 @@ lazy val ccwc = (project in file("."))
     name := "ccwc",
     libraryDependencies ++= Seq(
       "com.github.scopt" %% "scopt" % "4.1.0",
-      "com.lihaoyi" %% "os-lib" % "0.9.1",
+      "com.lihaoyi" %% "os-lib" % "0.10.1",
       "org.scalatest" %% "scalatest" % "3.2.18" % "test",
     ),
     Compile / mainClass := Some("Main"),
@@ -17,5 +17,7 @@ lazy val ccwc = (project in file("."))
 
     Test / testOptions += Tests.Argument(
       TestFrameworks.ScalaTest, s"-DtargetDir=${target.value}"
-    )
+    ),
+
+    (Test / test) := ((Test / test) dependsOn nativeImage).value
   )
