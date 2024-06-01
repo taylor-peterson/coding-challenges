@@ -10,10 +10,33 @@ case class Config(
     file: String = "-",
 )
 
+case class Counts(
+    lines: BigInt = 0,
+    words: BigInt = 0,
+    chars: BigInt = 0,
+    bytes: BigInt = 0,
+) {
+  private val CARRIAGE_RETURN_NEWLINE = 2
+
+  private def increment(line: String): Counts = {
+    Counts(
+      lines + 1,
+      words + line.split("""\s""").count(_.nonEmpty),
+      chars + line.length + CARRIAGE_RETURN_NEWLINE,
+      bytes + line.getBytes().length + CARRIAGE_RETURN_NEWLINE,
+    )
+  }
+}
+object Counts {
+  def apply(lines: Iterator[String]): Counts = {
+    lines.foldLeft(Counts())((counts, line) => counts.increment(line))
+  }
+}
+
 object Main extends App {
   private val builder = OParser.builder[Config]
 
-  private val parser1 = {
+  private val parser = {
     import builder._
     OParser.sequence(
       programName("ccwc"),
@@ -42,43 +65,31 @@ object Main extends App {
   }
 
   private def run(config: Config): Unit = {
-    val CARRIAGE_RETURN_NEWLINE = 2
-    var (line_count, word_count, char_count, byte_count) = (BigInt(0), BigInt(0), BigInt(0), BigInt(0))
-
-    def increment_counts(line: String): Unit = {
-      line_count += 1
-      word_count += line.split("""\s""").count(_.nonEmpty)
-      char_count += line.length + CARRIAGE_RETURN_NEWLINE
-      byte_count += line.getBytes().length + CARRIAGE_RETURN_NEWLINE
-    }
-
-    if (config.file == "-") {
-      val lines = Iterator.continually(StdIn.readLine).takeWhile(_ != null)
-      lines.foreach(line => increment_counts(line))
+    val counts = if (config.file == "-") {
+      Counts(Iterator.continually(StdIn.readLine).takeWhile(_ != null))
     } else {
-      val path = if (config.file.startsWith("/")) os.Path(config.file) else os.pwd / os.RelPath(config.file)
-      if (os.exists(path)) {
-        val lineStream = os.read.lines.stream(path)
-        lineStream.foreach(line => increment_counts(line))
-      } else {
-        println(s"File ${config.file} does not exist.")
-      }
+      // catch FileNotFoundException and print nicer output
+      val path = if (config.file.startsWith("/")) config.file else (os.pwd / os.RelPath(config.file)).toString()
+      val bufferedSource = io.Source.fromFile(path)
+      val counts = Counts(bufferedSource.getLines())
+      bufferedSource.close()
+      counts
     }
 
     var output = ""
-    if (config.lines) output += line_count + "\t"
-    if (config.words) output += word_count + "\t"
-    if (config.chars) output += char_count + "\t"
-    if (config.bytes) output += byte_count + "\t"
+    if (config.lines) output += counts.lines + "\t"
+    if (config.words) output += counts.words + "\t"
+    if (config.chars) output += counts.chars + "\t"
+    if (config.bytes) output += counts.bytes + "\t"
     if (config.file != "-") output += config.file
 
     println(output)
   }
 
-  // Default to bytes, lines, words if no other counts were specified.
-  OParser.parse(parser1, args, Config()) match {
+  OParser.parse(parser, args, Config()) match {
     case Some(config) =>
       config match {
+        // Default to bytes, lines, words if no other counts were specified.
         case Config(false, false, false, false, file) =>
           run(Config(lines = true, words = true, chars = false, bytes = true, file))
         case _ => run(config)
