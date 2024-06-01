@@ -52,6 +52,11 @@ class CcwcSpec extends FixtureAnyWordSpec with Matchers with TableDrivenProperty
         }
       }
     }
+    "given invalid file path" should {
+      "print error message" in { ccwc =>
+        (ccwc + " nonexistent-file").!! shouldBe "nonexistent-file: No such file."
+      }
+    }
     "with stdin" should {
       "return the correct counts for bytes, lines, and words" in { ccwc =>
         (s"cat $testTxtPath" #| ccwc).!! shouldBe s"7145\t58164\t342190\t\n"
