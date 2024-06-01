@@ -73,7 +73,7 @@ object Main extends App {
       bufferedSource.close()
       Some(counts)
     } catch {
-      case _: FileNotFoundException => println(s"${file}: No such file."); None
+      case _: FileNotFoundException => println(s"$file: No such file."); None
     }
   }
 
