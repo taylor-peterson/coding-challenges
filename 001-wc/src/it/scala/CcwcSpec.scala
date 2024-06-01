@@ -1,7 +1,6 @@
 import org.scalatest.Outcome
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.prop.Tables.Table
 import org.scalatest.wordspec.FixtureAnyWordSpec
 
 import scala.sys.process._
@@ -16,7 +15,7 @@ class CcwcSpec extends FixtureAnyWordSpec with Matchers with TableDrivenProperty
     withFixture(test.toNoArgTest(ccwc))
   }
 
-  def returnCounts = afterWord("return the correct counts for")
+  def returnCounts: AfterWord = afterWord("return the correct counts for")
 
   "ccwc" when {
     "-h" should {
@@ -55,7 +54,7 @@ class CcwcSpec extends FixtureAnyWordSpec with Matchers with TableDrivenProperty
     }
     "with stdin" should {
       "return the correct counts for bytes, lines, and words" in { ccwc =>
-        (s"cat $testTxtPath" #| ccwc.toString()).!! shouldBe s"7145\t58164\t342190\t\n"
+        (s"cat $testTxtPath" #| ccwc).!! shouldBe s"7145\t58164\t342190\t\n"
       }
     }
   }
