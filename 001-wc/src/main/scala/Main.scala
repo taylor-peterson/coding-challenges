@@ -79,21 +79,20 @@ object Main extends App {
 
   private def run(config: Config): Unit = {
     val counts = config.file match {
-      case "-" => Some(Counts(Iterator.continually(StdIn.readLine).takeWhile(_ != null)))
+      case "-"  => Some(Counts(Iterator.continually(StdIn.readLine).takeWhile(_ != null)))
       case file => countsFromFile(file)
     }
 
-    if (counts.nonEmpty) {
-      // TODO remove var
-      var output = ""
-      if (config.lines) output += counts.get.lines + "\t"
-      if (config.words) output += counts.get.words + "\t"
-      if (config.chars) output += counts.get.chars + "\t"
-      if (config.bytes) output += counts.get.bytes + "\t"
-      if (config.file != "-") output += config.file
-
+    counts.foreach(c => {
+      val output = "%s%s%s%s%s".format(
+        if (config.lines) s"${c.lines}\t" else "",
+        if (config.words) s"${c.words}\t" else "",
+        if (config.chars) s"${c.chars}\t" else "",
+        if (config.bytes) s"${c.bytes}\t" else "",
+        if (config.file != "-") config.file else "",
+      )
       println(output)
-    }
+    })
   }
 
   OParser.parse(parser, args, Config()) match {
