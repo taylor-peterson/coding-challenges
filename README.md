@@ -1,2 +1,3 @@
-# coding-challenges
-Solutions to https://codingchallenges.fyi/challenges/challenge-wc/
+# [coding-challenges](https://codingchallenges.fyi/challenges/challenge-wc/)
+
+Learn by doing!
