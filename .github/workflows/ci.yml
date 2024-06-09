@@ -21,6 +21,9 @@ jobs:
           sudo chmod 644 /etc/apt/trusted.gpg.d/scalasbt-release.gpg
           sudo apt-get update
           sudo apt-get install sbt
-      - name: Build and Test
+      - name: Build and Test - 001-wc
         run: sbt -v test IntegrationTest/test
         working-directory: 001-wc
+      - name: Build and Test - 004-cut
+        run: sbt -v test IntegrationTest/test
+        working-directory: 004-cut
