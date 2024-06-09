@@ -11,7 +11,7 @@ case class Config(
 
 case class Selections(lines: List[String] = Nil) {
   private def process(config: Config, line: String): Selections = {
-    Selections(lines :+ line.split("\t")(config.fields.toInt - 1))
+    Selections(lines :+ line.split(config.delim)(config.fields.toInt - 1))
   }
 
   override def toString: String = {
@@ -69,8 +69,8 @@ object Main extends App {
 
   private def run(config: Config): Unit = {
     val selections = config.file match {
-      case "-"  => Some(Selections(config, Iterator.continually(StdIn.readLine).takeWhile(_ != null)))
-      case file => selectionsFromFile(config)
+      case "-" => Some(Selections(config, Iterator.continually(StdIn.readLine).takeWhile(_ != null)))
+      case _   => selectionsFromFile(config)
     }
 
     selections.foreach(println)

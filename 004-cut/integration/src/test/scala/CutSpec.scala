@@ -66,12 +66,12 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
       "split on commas" in { cut =>
         val expectedOutput =
           """Song title
-            |"1000 Reasons (Bless the Lord)"
+            |"10000 Reasons (Bless the Lord)"
             |"20 Good Reasons"
             |"Adore You"
             |"Africa"
             |""".stripMargin
-        (cut + s" -f1 -d, $fourChordsCsvPath" #| "head -n5").!! shouldBe expectedOutput
+        (s"$cut -f 1 -d , $fourChordsCsvPath" #| "head -n5").!! shouldBe expectedOutput
       }
     }
     "given a list of fields" should {
@@ -84,7 +84,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |15\t16
             |20\t21
             |""".stripMargin
-        (cut + s" -f1,2 $sampleTsvPath").!! shouldBe expectedOutput
+        (cut + s" -f 1,2 $sampleTsvPath").!! shouldBe expectedOutput
       }
       "return the correct fields separated by a single occurrence of the provided field delimiter" in { cut =>
         val expectedOutput =
@@ -94,7 +94,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |"Adore You",Harry Styles
             |"Africa",Toto
             |""".stripMargin
-        (cut + s" -d, -f\"1,2\" $fourChordsCsvPath" #| "head -n5").!! shouldBe expectedOutput
+        (cut + s" -d , -f \"1,2\" $fourChordsCsvPath" #| "head -n5").!! shouldBe expectedOutput
       }
     }
     "no file is provided" should {
@@ -106,7 +106,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |"You're Not Sorry",Taylor Swift
             |"Zombie",The Cranberries
             |""".stripMargin
-        (s"tail -n5 $fourChordsCsvPath" #| cut + " -d, -f\"1 2\"").!! shouldBe expectedOutput
+        (s"tail -n5 $fourChordsCsvPath" #| cut + " -d , -f \"1 2\"").!! shouldBe expectedOutput
       }
     }
     "- is provided as file" should {
@@ -118,9 +118,10 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |"You're Not Sorry",Taylor Swift
             |"Zombie",The Cranberries
             |""".stripMargin
-        (s"tail -n5 $fourChordsCsvPath" #| cut + " -d, -f\"1 2\" -").!! shouldBe expectedOutput
+        (s"tail -n5 $fourChordsCsvPath" #| cut + " -d , -f \"1 2\" -").!! shouldBe expectedOutput
       }
     }
     // TODO cut -f2 -d, fourchords.csv | uniq | ccwc -l
+    // TODO support -f2 vs -f 2 syntax?
   }
 }

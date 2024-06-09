@@ -6,7 +6,7 @@ class CutSpec extends AnyWordSpec with Matchers {
   "cut" when {
     "invoked" should {
       "run" in {
-        Main.main(Array("-f", "1", getClass.getResource("sample.tsv").getPath))
+        Main.main(Array("-f", "1", "-d", ",", getClass.getResource("fourchords.csv").getPath))
       }
     }
   }
