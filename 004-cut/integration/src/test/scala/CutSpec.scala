@@ -77,7 +77,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
     "given a list of fields" should {
       "return the correct fields separated by a single occurrence of the default field delimiter" in { cut =>
         val expectedOutput =
-          """f0\tf1
+          s"""f0\tf1
             |0\t1
             |5\t6
             |10\t11
@@ -88,8 +88,8 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
       }
       "return the correct fields separated by a single occurrence of the provided field delimiter" in { cut =>
         val expectedOutput =
-          """Song title,Artist
-            |"10000 Reasons (Bless the Lord)",Matt Redman and Jonas Myrin
+          """\uFEFFSong title,Artist
+            |"10000 Reasons (Bless the Lord)",Matt Redman\u00A0and\u00A0Jonas Myrin
             |"20 Good Reasons",Thirsty Merc
             |"Adore You",Harry Styles
             |"Africa",Toto

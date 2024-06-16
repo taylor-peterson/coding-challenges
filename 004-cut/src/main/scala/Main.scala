@@ -11,7 +11,11 @@ case class Config(
 
 case class Selections(lines: List[String] = Nil) {
   private def process(config: Config, line: String): Selections = {
-    Selections(lines :+ line.split(config.delim)(config.fields.toInt - 1))
+    // TODO validate that fields contains at most one of space/comma
+    val fieldsToGet = config.fields.split("[ ,]").map(_.toInt - 1) // 1 to 0 indexed
+    val fields = line.split(config.delim)
+    val newLine = (fieldsToGet map fields).mkString(config.delim) // Separate correct fields with delim
+    Selections(lines :+ newLine)
   }
 
   override def toString: String = {
