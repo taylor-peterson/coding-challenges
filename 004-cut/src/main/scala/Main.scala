@@ -68,7 +68,7 @@ object Main extends App {
 
   OParser.parse(parser, args, Config()) match {
     case Some(config) => run(config)
-    case _            => println("Invalid options provided")
+    case _            => sys.exit(1)
   }
 
   private def run(config: Config): Unit = {
@@ -78,7 +78,6 @@ object Main extends App {
     }
 
     selections.foreach(println)
-    // TODO status code
   }
 
   private def selectionsFromFile(config: Config): Option[Selections] = {
@@ -89,7 +88,7 @@ object Main extends App {
       bufferedSource.close()
       Some(selections)
     } catch {
-      case _: FileNotFoundException => println(s"$config.file: No such file."); None
+      case _: FileNotFoundException => println(s"${config.file}: No such file."); sys.exit(1)
     }
   }
 }

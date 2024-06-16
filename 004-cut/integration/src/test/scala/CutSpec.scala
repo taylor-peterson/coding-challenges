@@ -35,7 +35,33 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |
             |Column and field numbering start from 1.
             |""".stripMargin
-        (s"$cut -h").!! shouldBe expectedUsage
+        s"$cut -h".!! shouldBe expectedUsage
+      }
+    }
+    "provided invalid options" should {
+      "provide info and fail" in { cut =>
+        val command = s"$cut -n"
+        val expectedOutput =
+          """Error: Unknown option -n
+            |Try --help for more information.
+            |""".stripMargin
+        val sb = new StringBuffer
+        val err = new StringBuilder()
+        val printer = ProcessLogger((e: String) => err.append(e + "\n"))
+        (command run BasicIO(withIn = false, sb, Some(printer))).exitValue() shouldBe 1
+        sb.toString shouldBe ""
+        err.toString shouldBe expectedOutput
+      }
+    }
+    "provided invalid file" should {
+      "provided info and fail" in { cut =>
+        val command = s"$cut nonexistent.file"
+        val expectedOutput =
+          """nonexistent.file: No such file.
+            |""".stripMargin
+        val sb = new StringBuffer
+        (command run BasicIO(withIn = false, sb, None)).exitValue shouldBe 1
+        sb.toString shouldBe expectedOutput // TODO direct to STDERR instead
       }
     }
     "cutting single field from file" should {
@@ -48,7 +74,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |15
             |20
             |""".stripMargin
-        (s"$cut -f 1 $sampleTsvPath").!! shouldBe expectedOutput
+        s"$cut -f 1 $sampleTsvPath".!! shouldBe expectedOutput
       }
       "yield f2" in { cut =>
         val expectedOutput =
@@ -59,7 +85,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |16
             |21
             |""".stripMargin
-        (s"$cut -f 2 $sampleTsvPath").!! shouldBe expectedOutput
+        s"$cut -f 2 $sampleTsvPath".!! shouldBe expectedOutput
       }
     }
     "given a delimiter" should {
@@ -84,7 +110,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |15\t16
             |20\t21
             |""".stripMargin
-        (s"$cut -f 1,2 $sampleTsvPath").!! shouldBe expectedOutput
+        s"$cut -f 1,2 $sampleTsvPath".!! shouldBe expectedOutput
       }
       "return the correct fields separated by a single occurrence of the provided field delimiter" in { cut =>
         val expectedOutput =
