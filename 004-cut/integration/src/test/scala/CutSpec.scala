@@ -64,14 +64,14 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
     }
     "given a delimiter" should {
       "split on commas" in { cut =>
-        val expectedOutput =
-          """Song title
+        val expectedOutput = // Test files starts with ZWNBSP as `byte-order-mark`
+          """\uFEFFSong title
             |"10000 Reasons (Bless the Lord)"
             |"20 Good Reasons"
             |"Adore You"
             |"Africa"
             |""".stripMargin
-        (s"$cut -f 1 -d , $fourChordsCsvPath" #| "head -n5").!! shouldBe expectedOutput
+        (s"cut -f 1 -d , $fourChordsCsvPath" #| "head -n5").!! shouldBe expectedOutput
       }
     }
     "given a list of fields" should {
