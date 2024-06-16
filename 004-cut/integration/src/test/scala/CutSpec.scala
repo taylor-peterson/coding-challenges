@@ -35,7 +35,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |
             |Column and field numbering start from 1.
             |""".stripMargin
-        (cut + " -h").!! shouldBe expectedUsage
+        (s"$cut -h").!! shouldBe expectedUsage
       }
     }
     "cutting single field from file" should {
@@ -48,7 +48,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |15
             |20
             |""".stripMargin
-        (cut + s" -f 1 $sampleTsvPath").!! shouldBe expectedOutput
+        (s"$cut -f 1 $sampleTsvPath").!! shouldBe expectedOutput
       }
       "yield f2" in { cut =>
         val expectedOutput =
@@ -59,7 +59,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |16
             |21
             |""".stripMargin
-        (cut + s" -f 2 $sampleTsvPath").!! shouldBe expectedOutput
+        (s"$cut -f 2 $sampleTsvPath").!! shouldBe expectedOutput
       }
     }
     "given a delimiter" should {
@@ -71,7 +71,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |"Adore You"
             |"Africa"
             |""".stripMargin
-        (s"cut -f 1 -d , $fourChordsCsvPath" #| "head -n5").!! shouldBe expectedOutput
+        (s"$cut -f 1 -d , $fourChordsCsvPath" #| "head -n5").!! shouldBe expectedOutput
       }
     }
     "given a list of fields" should {
@@ -84,7 +84,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |15\t16
             |20\t21
             |""".stripMargin
-        (cut + s" -f 1,2 $sampleTsvPath").!! shouldBe expectedOutput
+        (s"$cut -f 1,2 $sampleTsvPath").!! shouldBe expectedOutput
       }
       "return the correct fields separated by a single occurrence of the provided field delimiter" in { cut =>
         val expectedOutput =
@@ -94,7 +94,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |"Adore You",Harry Styles
             |"Africa",Toto
             |""".stripMargin
-        (cut + s" -d , -f \"1,2\" $fourChordsCsvPath" #| "head -n5").!! shouldBe expectedOutput
+        (s"$cut -d , -f \"1,2\" $fourChordsCsvPath" #| "head -n5").!! shouldBe expectedOutput
       }
     }
     "no file is provided" should {
@@ -106,7 +106,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |"You're Not Sorry",Taylor Swift
             |"Zombie",The Cranberries
             |""".stripMargin
-        (s"tail -n5 $fourChordsCsvPath" #| cut + " -d , -f \"1 2\"").!! shouldBe expectedOutput
+        (s"tail -n5 $fourChordsCsvPath" #| s"$cut -d , -f \"1 2\"").!! shouldBe expectedOutput
       }
     }
     "- is provided as file" should {
@@ -118,7 +118,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |"You're Not Sorry",Taylor Swift
             |"Zombie",The Cranberries
             |""".stripMargin
-        (s"tail -n5 $fourChordsCsvPath" #| cut + " -d , -f \"1 2\" -").!! shouldBe expectedOutput
+        (s"tail -n5 $fourChordsCsvPath" #| s"$cut -d , -f \"1 2\" -").!! shouldBe expectedOutput
       }
     }
     // TODO cut -f2 -d, fourchords.csv | uniq | ccwc -l
