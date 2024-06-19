@@ -88,7 +88,7 @@ object Main extends App {
       bufferedSource.close()
       Some(selections)
     } catch {
-      case _: FileNotFoundException => println(s"${config.file}: No such file."); sys.exit(1)
+      case _: FileNotFoundException => Console.err.println(s"${config.file}: No such file."); sys.exit(1)
     }
   }
 }

@@ -15,6 +15,15 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
     withFixture(test.toNoArgTest(cut))
   }
 
+  def validateCli(command: String, expectedStatus: Int, expectedStdOut: String = "", expectedStdErr: String = ""): Assertion = {
+    val stdout = new StringBuilder
+    val stderr = new StringBuilder
+    val status = command ! ProcessLogger(stdout append _, stderr append _ + "\n")
+    status shouldBe expectedStatus
+    stdout.toString shouldBe expectedStdOut
+    stderr.toString shouldBe expectedStdErr
+  }
+
   "cut" when {
     "-h" should {
       "display usage information" in { cut =>
@@ -45,23 +54,14 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
           """Error: Unknown option -n
             |Try --help for more information.
             |""".stripMargin
-        val sb = new StringBuffer
-        val err = new StringBuilder()
-        val printer = ProcessLogger((e: String) => err.append(e + "\n"))
-        (command run BasicIO(withIn = false, sb, Some(printer))).exitValue() shouldBe 1
-        sb.toString shouldBe ""
-        err.toString shouldBe expectedOutput
+        validateCli(command, expectedStatus = 1, expectedStdErr = expectedOutput)
       }
     }
     "provided invalid file" should {
       "provided info and fail" in { cut =>
         val command = s"$cut nonexistent.file"
-        val expectedOutput =
-          """nonexistent.file: No such file.
-            |""".stripMargin
-        val sb = new StringBuffer
-        (command run BasicIO(withIn = false, sb, None)).exitValue shouldBe 1
-        sb.toString shouldBe expectedOutput // TODO direct to STDERR instead
+        val expectedOutput = "nonexistent.file: No such file.\n"
+        validateCli(command, expectedStatus = 1, expectedStdErr = expectedOutput)
       }
     }
     "cutting single field from file" should {
