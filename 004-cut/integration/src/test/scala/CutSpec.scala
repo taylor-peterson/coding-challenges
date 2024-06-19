@@ -1,4 +1,4 @@
-import org.scalatest.Outcome
+import org.scalatest.{Assertion, Outcome}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.FixtureAnyWordSpec
 
@@ -18,7 +18,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
   def validateCli(command: String, expectedStatus: Int, expectedStdOut: String = "", expectedStdErr: String = ""): Assertion = {
     val stdout = new StringBuilder
     val stderr = new StringBuilder
-    val status = command ! ProcessLogger(stdout append _, stderr append _ + "\n")
+    val status = command ! ProcessLogger(stdout append _ + "\n", stderr append _ + "\n")
     status shouldBe expectedStatus
     stdout.toString shouldBe expectedStdOut
     stderr.toString shouldBe expectedStdErr
@@ -101,7 +101,8 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
       }
     }
     "given a list of fields" should {
-      "return the correct fields separated by a single occurrence of the default field delimiter" in { cut =>
+      // TODO extract duplicated text
+      "parse on comma and return the correct fields separated by a single occurrence of the default field delimiter" in { cut =>
         val expectedOutput =
           s"""f0\tf1
             |0\t1
@@ -112,7 +113,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |""".stripMargin
         s"$cut -f 1,2 $sampleTsvPath".!! shouldBe expectedOutput
       }
-      "return the correct fields separated by a single occurrence of the provided field delimiter" in { cut =>
+      "parse on space return the correct fields separated by a single occurrence of the provided field delimiter" in { cut =>
         val expectedOutput =
           """\uFEFFSong title,Artist
             |"10000 Reasons (Bless the Lord)",Matt Redman\u00A0and\u00A0Jonas Myrin
@@ -121,6 +122,18 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |"Africa",Toto
             |""".stripMargin
         (s"$cut -d , -f \"1,2\" $fourChordsCsvPath" #| "head -n5").!! shouldBe expectedOutput
+      }
+      "parse on space and comma, re-order, de-duplicate, and ignore out of bounds fields" in { cut =>
+        val expectedOutput =
+          s"""f0\tf1
+             |0\t1
+             |5\t6
+             |10\t11
+             |15\t16
+             |20\t21
+             |""".stripMargin
+        val command = s"$cut -f \"2,1,1, 8\" $sampleTsvPath"
+        validateCli(command, 0, expectedOutput)
       }
     }
     "no file is provided" should {
@@ -132,7 +145,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |"You're Not Sorry",Taylor Swift
             |"Zombie",The Cranberries
             |""".stripMargin
-        (s"tail -n5 $fourChordsCsvPath" #| s"$cut -d , -f \"1 2\"").!! shouldBe expectedOutput
+        (s"tail -n5 $fourChordsCsvPath" #| s"$cut -d , -f \"1,2\"").!! shouldBe expectedOutput
       }
     }
     "- is provided as file" should {

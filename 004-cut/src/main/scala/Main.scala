@@ -11,9 +11,9 @@ case class Config(
 
 case class Selections(lines: List[String] = Nil) {
   private def process(config: Config, line: String): Selections = {
-    // TODO validate that fields contains at most one of space/comma
-    val fieldsToGet = config.fields.split("[ ,]").map(_.toInt - 1) // 1 to 0 indexed
     val fields = line.split(config.delim)
+    // Split on "," or " ", convert from 1 to 0 indexed, only accept valid fields, return in order without duplicates
+    val fieldsToGet = config.fields.split("[ ,]").filter(_.nonEmpty).map(_.toInt - 1).filter(x => 0 <= x && x < fields.length).sorted.toSet
     val newLine = (fieldsToGet map fields).mkString(config.delim) // Separate correct fields with delim
     Selections(lines :+ newLine)
   }
@@ -47,10 +47,10 @@ object Main extends App {
         .action((fields, c) => c.copy(fields = fields))
         .text(
           "Comma or whitespace separated set of numbers and/or number ranges." +
-            "\nSpecifies fields, separated in the input by the field delimiter character (see the -d option)" +
-            "\nNumbers may be repeated and in any order." +
-            "\nIf a field or column is specified multiple times, it will appear only once in the output." +
-            "\nIt is not an error to select columns or fields not present in the input line.",
+          "\nSpecifies fields, separated in the input by the field delimiter character (see the -d option)" +
+          "\nNumbers may be repeated and in any order." +
+          "\nIf a field or column is specified multiple times, it will appear only once in the output." +
+          "\nIt is not an error to select columns or fields not present in the input line.",
         ),
       arg[String]("file")
         .action((file, c) => c.copy(file = file))
