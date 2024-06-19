@@ -9,7 +9,6 @@ lazy val ccwc = (project in file("."))
       "com.lihaoyi" %% "os-lib" % "0.10.2",
       "org.scalatest" %% "scalatest" % "3.2.18" % "test",
     ),
-    Compile / mainClass := Some("Main"),
 
     // https://typelevel.org/cats-effect/docs/core/native-image
     nativeImageOptions += "--no-fallback",
