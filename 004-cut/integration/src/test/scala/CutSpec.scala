@@ -159,6 +159,5 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
         (s"tail -n5 $fourChordsCsvPath" #| s"$cut -d , -f \"1 2\" -").!! shouldBe expectedOutput
       }
     }
-    // TODO cut -f2 -d, fourchords.csv | uniq | ccwc -l
   }
 }
