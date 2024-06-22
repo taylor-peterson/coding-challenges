@@ -101,8 +101,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
       }
     }
     "given a list of fields" should {
-      // TODO extract duplicated text
-      "parse on comma and return the correct fields separated by a single occurrence of the default field delimiter" in { cut =>
+      "parse on comma correctly" in { cut =>
         val expectedOutput =
           s"""f0\tf1
             |0\t1
@@ -113,7 +112,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |""".stripMargin
         s"$cut -f 1,2 $sampleTsvPath".!! shouldBe expectedOutput
       }
-      "parse on space return the correct fields separated by a single occurrence of the provided field delimiter" in { cut =>
+      "parse on space correctly" in { cut =>
         val expectedOutput =
           """\uFEFFSong title,Artist
             |"10000 Reasons (Bless the Lord)",Matt Redman\u00A0and\u00A0Jonas Myrin
@@ -161,6 +160,5 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
       }
     }
     // TODO cut -f2 -d, fourchords.csv | uniq | ccwc -l
-    // TODO support -f2 vs -f 2 syntax?
   }
 }
