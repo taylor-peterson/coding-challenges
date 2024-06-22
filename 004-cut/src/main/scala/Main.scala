@@ -10,10 +10,15 @@ case class Config(
 )
 
 case class Selections(lines: List[String] = Nil) {
-  private def process(config: Config, line: String): Selections = {
+  private def processLine(config: Config, line: String): Selections = {
     val fields = line.split(config.delim)
-    // Split on "," or " ", convert from 1 to 0 indexed, only accept valid fields, return in order without duplicates
-    val fieldsToGet = config.fields.split("[ ,]").filter(_.nonEmpty).map(_.toInt - 1).filter(x => 0 <= x && x < fields.length).sorted.toSet
+    val fieldsToGet = config.fields
+      .split("[ ,]") // Split on either/both " " and ,
+      .filter(_.nonEmpty) // Ignore any empty matches that may arise (e.g. if were handling "1, 2"
+      .map(_.toInt - 1) // Convert from 1 to 0 indexing
+      .filter(x => 0 <= x && x < fields.length) // Only field indices that are in bounds for the line
+      .distinct // Ignore duplicates
+      .sorted // Return fields in order
     val newLine = (fieldsToGet map fields).mkString(config.delim) // Separate correct fields with delim
     Selections(lines :+ newLine)
   }
@@ -25,7 +30,7 @@ case class Selections(lines: List[String] = Nil) {
 
 object Selections {
   def apply(config: Config, lines: Iterator[String]): Selections = {
-    lines.foldLeft(Selections())((selections, line) => selections.process(config, line))
+    lines.foldLeft(Selections())((selections, line) => selections.processLine(config, line))
   }
 }
 
@@ -46,11 +51,11 @@ object Main extends App {
       opt[String]('f', "fields")
         .action((fields, c) => c.copy(fields = fields))
         .text(
-          "Comma or whitespace separated set of numbers and/or number ranges." +
-          "\nSpecifies fields, separated in the input by the field delimiter character (see the -d option)" +
-          "\nNumbers may be repeated and in any order." +
-          "\nIf a field or column is specified multiple times, it will appear only once in the output." +
-          "\nIt is not an error to select columns or fields not present in the input line.",
+          "Comma and/or whitespace separated set of numbers." +
+            "\nSpecifies fields, separated in the input by the field delimiter character (see the -d option)" +
+            "\nNumbers may be repeated and in any order." +
+            "\nIf a field or column is specified multiple times, it will appear only once in the output." +
+            "\nIt is not an error to select columns or fields not present in the input line.",
         ),
       arg[String]("file")
         .action((file, c) => c.copy(file = file))
