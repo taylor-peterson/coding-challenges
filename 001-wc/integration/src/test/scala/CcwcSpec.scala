@@ -10,9 +10,7 @@ class CcwcSpec extends FixtureAnyWordSpec with Matchers with TableDrivenProperty
 
   type FixtureParam = String
   def withFixture(test: OneArgTest): Outcome = {
-    val targetDir = test.configMap.getRequired[String]("targetDir")
-    val ccwc: FixtureParam = targetDir + s"/native-image/ccwc"
-    withFixture(test.toNoArgTest(ccwc))
+    withFixture(test.toNoArgTest(test.configMap.getRequired[String]("ccwc")))
   }
 
   def returnCounts: AfterWord = afterWord("return the correct counts for")

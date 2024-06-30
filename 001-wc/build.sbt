@@ -1,7 +1,9 @@
+import sbtassembly.AssemblyPlugin.defaultShellScript
+
 ThisBuild / scalaVersion := "2.13.13"
+ThisBuild / assemblyPrependShellScript := Some(defaultShellScript)
 
 lazy val ccwc = (project in file("."))
-  .enablePlugins(NativeImagePlugin)
   .settings(
     name := "ccwc",
     libraryDependencies ++= Seq(
@@ -10,10 +12,8 @@ lazy val ccwc = (project in file("."))
       "org.scalatest" %% "scalatest" % "3.2.18" % "test",
     ),
 
-    // https://typelevel.org/cats-effect/docs/core/native-image
-    nativeImageOptions += "--no-fallback",
-    nativeImageVersion := "22.1.0",
-    Global / excludeLintKeys += nativeImageVersion // Suppress lintUnused check
+    assembly / test := (Test / test).value,
+    assembly / assemblyJarName := s"${name.value}",
   )
 
 lazy val IntegrationTest = (project in file("integration"))
@@ -21,7 +21,7 @@ lazy val IntegrationTest = (project in file("integration"))
     publish / skip := true,
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.18" % Test,
     Test / testOptions += Tests.Argument(
-      TestFrameworks.ScalaTest, s"-DtargetDir=${(ccwc / target).value}"
+      TestFrameworks.ScalaTest, s"-Dccwc=${(ccwc / assembly / target).value}/ccwc"
     ),
-    Test / test := ((Test / test) dependsOn (ccwc / nativeImage)).value
+    Test / test := ((Test / test) dependsOn (ccwc / assembly)).value
   )
