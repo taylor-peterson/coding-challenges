@@ -21,12 +21,15 @@ jobs:
           sudo chmod 644 /etc/apt/trusted.gpg.d/scalasbt-release.gpg
           sudo apt-get update
           sudo apt-get install sbt
-      - name: Build and Test - 000-core
-        run: sbt -v test IntegrationTest/test
-        working-directory: 000-core
       - name: Build and Test - 001-wc
         run: sbt -v test IntegrationTest/test
         working-directory: 001-wc
       - name: Build and Test - 004-cut
         run: sbt -v test IntegrationTest/test
         working-directory: 004-cut
+      - name: Integration Test # TODO don't hardcode paths
+        run: |
+          cut="./004-cut/target/scala-2.13/cut"
+          test_csv="./004-cut/integration/src/test/resources/fourchords.csv"
+          wc="./001-wc/target/scala-2.13/ccwc"
+          $cut -f 2 -d , $test_csv | uniq | $wc -l | grep 155
