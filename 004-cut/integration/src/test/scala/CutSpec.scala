@@ -10,9 +10,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
 
   type FixtureParam = String
   def withFixture(test: OneArgTest): Outcome = {
-    val targetDir = test.configMap.getRequired[String]("targetDir")
-    val cut: FixtureParam = targetDir + "/native-image/cut"
-    withFixture(test.toNoArgTest(cut))
+    withFixture(test.toNoArgTest(test.configMap.getRequired[String]("cut")))
   }
 
   def validateCli(command: String, expectedStatus: Int, expectedStdOut: String = "", expectedStdErr: String = ""): Assertion = {
@@ -34,7 +32,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |The cut utility cuts out selected portions of each line (as specified by list) from each file and writes them to standard output.Output fields are separated by a single occurrence of the field delimiter character.
             |
             |  -d, --delim <value>   Use delim as the field delimiter character instead of the tab character
-            |  -f, --fields <value>  Comma or whitespace separated set of numbers and/or number ranges.
+            |  -f, --fields <value>  Comma and/or whitespace separated set of numbers.
             |                        Specifies fields, separated in the input by the field delimiter character (see the -d option)
             |                        Numbers may be repeated and in any order.
             |                        If a field or column is specified multiple times, it will appear only once in the output.

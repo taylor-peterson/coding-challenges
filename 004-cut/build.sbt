@@ -1,8 +1,10 @@
+import sbtassembly.AssemblyPlugin.defaultShellScript
+
 ThisBuild / scalaVersion := "2.13.13"
 
+ThisBuild / assemblyPrependShellScript := Some(defaultShellScript)
 // TODO extract common settings/config
 lazy val cut = (project in file("."))
-  .enablePlugins(NativeImagePlugin)
   .settings(
     name := "cut",
     libraryDependencies ++= Seq(
@@ -11,9 +13,8 @@ lazy val cut = (project in file("."))
       "org.scalatest" %% "scalatest" % "3.2.18" % "test",
     ),
 
-    nativeImageOptions += "--no-fallback",
-    nativeImageVersion := "22.1.0",
-    Global / excludeLintKeys += nativeImageVersion,
+    assembly / test := (Test / test).value,
+    assembly / assemblyJarName := name.value,
   )
 
 lazy val IntegrationTest = (project in file("integration"))
@@ -21,7 +22,7 @@ lazy val IntegrationTest = (project in file("integration"))
     publish / skip := true,
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.18" % Test,
     Test / testOptions += Tests.Argument(
-      TestFrameworks.ScalaTest, s"-DtargetDir=${(cut / target).value}"
+      TestFrameworks.ScalaTest, s"-Dcut=${(cut / assembly / target).value}/cut"
     ),
-    Test / test := ((Test / test) dependsOn (cut / nativeImage)).value
+    Test / test := ((Test / test) dependsOn (cut / assembly)).value
   )
