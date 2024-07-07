@@ -74,7 +74,7 @@ object Main extends App {
       bufferedSource.close()
       Some(counts)
     } catch {
-      case _: FileNotFoundException => println(s"$file: No such file."); None
+      case _: FileNotFoundException => Console.err.println(s"$file: No such file."); sys.exit(1)
     }
   }
 
@@ -104,6 +104,6 @@ object Main extends App {
           run(Config(lines = true, words = true, chars = false, bytes = true, file))
         case _ => run(config)
       }
-    case _ => // Erroneous input messaging handled by OParser
+    case _ => sys.exit(1)
   }
 }

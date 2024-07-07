@@ -1,19 +1,10 @@
-import org.scalatest.Outcome
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.wordspec.FixtureAnyWordSpec
+import com.github.taylorpeterson.CliSpec
 
 import scala.sys.process._
 
-class CcwcSpec extends FixtureAnyWordSpec with Matchers with TableDrivenPropertyChecks {
+class CcwcSpec extends CliSpec {
+  override val command: String = "ccwc"
   val testTxtPath: String = getClass.getResource("test.txt").getPath
-
-  // TODO extract to CliSpec
-  type FixtureParam = String
-  def withFixture(test: OneArgTest): Outcome = {
-    withFixture(test.toNoArgTest(test.configMap.getRequired[String]("ccwc")))
-  }
-
   def returnCounts: AfterWord = afterWord("return the correct counts for")
 
   "ccwc" when {
@@ -32,7 +23,7 @@ class CcwcSpec extends FixtureAnyWordSpec with Matchers with TableDrivenProperty
             |
             |When no flags are set, line, word, and byte counts will be provided.
             |""".stripMargin
-        (ccwc + " -h").!! shouldBe expectedUsage
+        validateCli(ccwc + " -h", expectedStatus = 0, expectedUsage)
       }
     }
     "counting from test file" should returnCounts {
@@ -47,18 +38,22 @@ class CcwcSpec extends FixtureAnyWordSpec with Matchers with TableDrivenProperty
 
       forEvery(countsTable) { (testCase, args, counts) =>
         testCase in { ccwc =>
-          (ccwc + s" $args $testTxtPath").!! shouldBe s"$counts\t$testTxtPath\n"
+          validateCli(ccwc + s" $args $testTxtPath", expectedStatus = 0, s"$counts\t$testTxtPath\n")
         }
       }
     }
     "given invalid file path" should {
       "print error message" in { ccwc =>
-        (ccwc + " nonexistent-file").!! shouldBe "nonexistent-file: No such file.\n"
+        validateCli(
+          ccwc + " nonexistent-file",
+          expectedStatus = 1,
+          expectedStdErr = "nonexistent-file: No such file.\n",
+        )
       }
     }
     "with stdin" should {
       "return the correct counts for bytes, lines, and words" in { ccwc =>
-        (s"cat $testTxtPath" #| ccwc).!! shouldBe s"7145\t58164\t342190\t\n"
+        validateCli(s"cat $testTxtPath" #| ccwc, expectedStatus = 0, expectedStdOut = s"7145\t58164\t342190\t\n")
       }
     }
   }
