@@ -3,13 +3,15 @@ import sbtassembly.AssemblyPlugin.defaultShellScript
 ThisBuild / scalaVersion := "2.13.13"
 ThisBuild / assemblyPrependShellScript := Some(defaultShellScript)
 
+ThisBuild / resolvers += Resolver.githubPackages("taylor-peterson")
+
 lazy val ccwc = (project in file("."))
   .settings(
     name := "ccwc",
     libraryDependencies ++= Seq(
       "com.github.scopt" %% "scopt" % "4.1.0",
       "com.lihaoyi" %% "os-lib" % "0.10.2",
-      "com.github.taylor-peterson" %% "000-core" % "0.1",
+      "com.github.taylor-peterson" %% "000-core" % "0.3",
       "org.scalatest" %% "scalatest" % "3.2.19" % Test,
     ),
 
@@ -22,7 +24,7 @@ lazy val IntegrationTest = (project in file("integration"))
     publish / skip := true,
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.2.19" % Test,
-      "com.github.taylor-peterson" %% "000-core" % "0.1" % Test,
+      "com.github.taylor-peterson" %% "000-core" % "0.3" % Test,
     ),
     Test / testOptions += Tests.Argument(
       TestFrameworks.ScalaTest, s"-Dccwc=${(ccwc / assembly / target).value}/ccwc"

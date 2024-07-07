@@ -29,6 +29,9 @@ case class Counts(
   }
 }
 object Counts {
+  def apply(c: Config, lines: Iterator[String]): Counts = {
+    apply(lines)
+  }
   def apply(lines: Iterator[String]): Counts = {
     lines.foldLeft(Counts())((counts, line) => counts.increment(line))
   }
