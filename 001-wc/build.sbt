@@ -9,7 +9,7 @@ lazy val ccwc = (project in file("."))
     libraryDependencies ++= Seq(
       "com.github.scopt" %% "scopt" % "4.1.0",
       "com.lihaoyi" %% "os-lib" % "0.10.2",
-      "org.scalatest" %% "scalatest" % "3.2.19" % "test",
+      "org.scalatest" %% "scalatest" % "3.2.19" % Test,
     ),
 
     assembly / test := (Test / test).value,
@@ -21,7 +21,7 @@ lazy val IntegrationTest = (project in file("integration"))
     publish / skip := true,
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.2.19" % Test,
-      "com.github.taylor-peterson" %% "000-core" % "0.1" % "test",
+      "com.github.taylor-peterson" %% "000-core" % "0.1" % Test,
     ),
     Test / testOptions += Tests.Argument(
       TestFrameworks.ScalaTest, s"-Dccwc=${(ccwc / assembly / target).value}/ccwc"
