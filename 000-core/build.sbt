@@ -1,6 +1,6 @@
 scalaVersion := "2.13.14"
 organization := "com.github.taylor-peterson"
-version := "0.4"
+version := "0.4" // TODO only publish if new version; require version bump
 
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / githubOwner := "taylor-peterson"
