@@ -68,7 +68,7 @@ object Main extends App {
   private def run(config: Config): Unit = {
     val counts = config.file match {
       case "-"  => Some(Counts(Iterator.continually(StdIn.readLine).takeWhile(_ != null)))
-      case file => FileHelpers.processFile(Counts.apply, file)
+      case file => FileHelpers.processFile(Counts.apply, config, file)
     }
 
     counts.foreach(c => {

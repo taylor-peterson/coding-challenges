@@ -1,7 +1,8 @@
 import scopt.OParser
 
-import java.io.FileNotFoundException
 import scala.io.StdIn
+
+import com.github.taylorpeterson.FileHelpers
 
 case class Config(
     delim: String = "\t",
@@ -79,21 +80,9 @@ object Main extends App {
   private def run(config: Config): Unit = {
     val selections = config.file match {
       case "-" => Some(Selections(config, Iterator.continually(StdIn.readLine).takeWhile(_ != null)))
-      case _   => selectionsFromFile(config)
+      case file => FileHelpers.processFile(Selections.apply, config, file)
     }
 
     selections.foreach(println)
-  }
-
-  private def selectionsFromFile(config: Config): Option[Selections] = {
-    val path = if (config.file.startsWith("/")) config.file else (os.pwd / os.RelPath(config.file)).toString()
-    try {
-      val bufferedSource = io.Source.fromFile(path)
-      val selections = Selections(config, bufferedSource.getLines())
-      bufferedSource.close()
-      Some(selections)
-    } catch {
-      case _: FileNotFoundException => Console.err.println(s"${config.file}: No such file."); sys.exit(1)
-    }
   }
 }
