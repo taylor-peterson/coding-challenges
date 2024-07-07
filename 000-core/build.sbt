@@ -6,10 +6,6 @@ ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / githubOwner := "taylor-peterson"
 ThisBuild / githubRepository := "coding-challenges"
 
-publishConfiguration := publishConfiguration.value.withOverwrite(true)
-publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true)
-pushRemoteCacheConfiguration := pushRemoteCacheConfiguration.value.withOverwrite(true)
-
 val CompileOnly = config("compile-only").hide
 
 lazy val root = (project in file("."))
