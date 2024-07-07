@@ -1,15 +1,11 @@
 import com.github.taylorpeterson.CliSpec
-import org.scalatest.Outcome
 import scala.sys.process._
 
 class CutSpec extends CliSpec {
+  override val command: String = "cut"
+
   private val sampleTsvPath = getClass.getResource("sample.tsv").getPath
   private val fourChordsCsvPath = getClass.getResource("fourchords.csv").getPath
-
-  type FixtureParam = String
-  def withFixture(test: OneArgTest): Outcome = {
-    withFixture(test.toNoArgTest(test.configMap.getRequired[String]("cut")))
-  }
 
   "cut" when {
     "-h" should {
@@ -31,7 +27,7 @@ class CutSpec extends CliSpec {
             |
             |Column and field numbering start from 1.
             |""".stripMargin
-        validateCli(s"$cut -h", 0, expectedUsage)
+        validateCli(s"$cut -h", expectedStatus = 0, expectedUsage)
       }
     }
     "provided invalid options" should {
@@ -61,7 +57,7 @@ class CutSpec extends CliSpec {
             |15
             |20
             |""".stripMargin
-        validateCli(s"$cut -f 1 $sampleTsvPath", 0, expectedOutput)
+        validateCli(s"$cut -f 1 $sampleTsvPath", expectedStatus = 0, expectedOutput)
       }
       "yield f2" in { cut =>
         val expectedOutput =
@@ -72,7 +68,7 @@ class CutSpec extends CliSpec {
             |16
             |21
             |""".stripMargin
-        validateCli(s"$cut -f 2 $sampleTsvPath", 0, expectedOutput)
+        validateCli(s"$cut -f 2 $sampleTsvPath", expectedStatus = 0, expectedOutput)
       }
     }
     "given a delimiter" should {
@@ -84,7 +80,7 @@ class CutSpec extends CliSpec {
             |"Adore You"
             |"Africa"
             |""".stripMargin
-        validateCli(s"$cut -f 1 -d , $fourChordsCsvPath" #| "head -n5", 0, expectedOutput)
+        validateCli(s"$cut -f 1 -d , $fourChordsCsvPath" #| "head -n5", expectedStatus = 0, expectedOutput)
       }
     }
     "given a list of fields" should {
@@ -97,7 +93,7 @@ class CutSpec extends CliSpec {
             |15\t16
             |20\t21
             |""".stripMargin
-        validateCli(s"$cut -f 1,2 $sampleTsvPath", 0, expectedOutput)
+        validateCli(s"$cut -f 1,2 $sampleTsvPath", expectedStatus = 0, expectedOutput)
       }
       "parse on space correctly" in { cut =>
         val expectedOutput =
@@ -107,7 +103,7 @@ class CutSpec extends CliSpec {
             |"Adore You",Harry Styles
             |"Africa",Toto
             |""".stripMargin
-        validateCli(s"$cut -d , -f \"1,2\" $fourChordsCsvPath" #| "head -n5", 0, expectedOutput)
+        validateCli(s"$cut -d , -f \"1,2\" $fourChordsCsvPath" #| "head -n5", expectedStatus = 0, expectedOutput)
       }
       "parse on space and comma, re-order, de-duplicate, and ignore out of bounds fields" in { cut =>
         val expectedOutput =
@@ -119,7 +115,7 @@ class CutSpec extends CliSpec {
              |20\t21
              |""".stripMargin
         val command = s"$cut -f \"2,1,1, 8\" $sampleTsvPath"
-        validateCli(command, 0, expectedOutput)
+        validateCli(command, expectedStatus = 0, expectedOutput)
       }
     }
     "no file is provided" should {
@@ -131,7 +127,7 @@ class CutSpec extends CliSpec {
             |"You're Not Sorry",Taylor Swift
             |"Zombie",The Cranberries
             |""".stripMargin
-        validateCli(s"tail -n5 $fourChordsCsvPath" #| s"$cut -d , -f \"1,2\"", 0 , expectedOutput)
+        validateCli(s"tail -n5 $fourChordsCsvPath" #| s"$cut -d , -f \"1,2\"", expectedStatus = 0 , expectedOutput)
       }
     }
     "- is provided as file" should {
@@ -143,7 +139,7 @@ class CutSpec extends CliSpec {
             |"You're Not Sorry",Taylor Swift
             |"Zombie",The Cranberries
             |""".stripMargin
-        validateCli(s"tail -n5 $fourChordsCsvPath" #| s"$cut -d , -f \"1 2\" -", 0, expectedOutput)
+        validateCli(s"tail -n5 $fourChordsCsvPath" #| s"$cut -d , -f \"1 2\" -", expectedStatus = 0, expectedOutput)
       }
     }
   }

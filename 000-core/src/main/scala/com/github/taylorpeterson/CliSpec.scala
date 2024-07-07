@@ -8,6 +8,8 @@ import scala.sys.process._
 
 package com.github.taylorpeterson {
 
+  import org.scalatest.Outcome
+
   abstract class CliSpec extends FixtureAnyWordSpec with Matchers with TableDrivenPropertyChecks {
     def validateCli(
                      command: ProcessBuilder,
@@ -21,6 +23,12 @@ package com.github.taylorpeterson {
       status shouldBe expectedStatus
       stdout.toString shouldBe expectedStdOut
       stderr.toString shouldBe expectedStdErr
+    }
+
+    type FixtureParam = String
+    val command: FixtureParam
+    def withFixture(test: OneArgTest): Outcome = {
+      withFixture(test.toNoArgTest(test.configMap.getRequired[String](command)))
     }
   }
 }
