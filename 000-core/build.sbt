@@ -1,12 +1,12 @@
 scalaVersion := "2.13.14"
 organization := "com.github.taylor-peterson"
-version := "0.3"
-versionScheme := Some("early-semver")
+version := "0.4"
 
-githubOwner := "taylor-peterson"
-githubRepository := "coding-challenges"
+ThisBuild / versionScheme := Some("early-semver")
+ThisBuild / githubOwner := "taylor-peterson"
+ThisBuild / githubRepository := "coding-challenges"
 
-val CompileOnly = config("compile-only").hide // TODO can't tell if this works
+val CompileOnly = config("compile-only").hide
 
 lazy val root = (project in file("."))
   .settings(

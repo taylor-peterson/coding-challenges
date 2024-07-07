@@ -12,4 +12,4 @@ sbt assembly # produce executable (prints output location)
 sbt IntegrationTest/test # run integration tests (will produce nativeImage first)
 ```
 
-Local validation of CI: run `act` from the repository root.
+Local validation of CI: run `act -s GITHUB_TOKEN` from the repository root.
