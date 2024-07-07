@@ -1,6 +1,6 @@
+import com.github.taylorpeterson.FileHelpers
 import scopt.OParser
 
-import java.io.FileNotFoundException
 import scala.io.StdIn
 
 case class Config(
@@ -65,23 +65,10 @@ object Main extends App {
     )
   }
 
-  // TODO extract
-  private def countsFromFile(file: String): Option[Counts] = {
-    val path = if (file.startsWith("/")) file else (os.pwd / os.RelPath(file)).toString()
-    try {
-      val bufferedSource = io.Source.fromFile(path)
-      val counts = Counts(bufferedSource.getLines())
-      bufferedSource.close()
-      Some(counts)
-    } catch {
-      case _: FileNotFoundException => Console.err.println(s"$file: No such file."); sys.exit(1)
-    }
-  }
-
   private def run(config: Config): Unit = {
     val counts = config.file match {
       case "-"  => Some(Counts(Iterator.continually(StdIn.readLine).takeWhile(_ != null)))
-      case file => countsFromFile(file)
+      case file => FileHelpers.processFile(Counts.apply, file)
     }
 
     counts.foreach(c => {
