@@ -20,7 +20,7 @@ lazy val cut = (project in file("."))
 lazy val IntegrationTest = (project in file("integration"))
   .settings(
     publish / skip := true,
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.18" % Test,
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.19" % Test,
     Test / testOptions += Tests.Argument(
       TestFrameworks.ScalaTest, s"-Dcut=${(cut / assembly / target).value}/cut"
     ),
