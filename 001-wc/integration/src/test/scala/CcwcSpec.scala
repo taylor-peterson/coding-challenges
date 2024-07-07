@@ -8,6 +8,7 @@ import scala.sys.process._
 class CcwcSpec extends FixtureAnyWordSpec with Matchers with TableDrivenPropertyChecks {
   val testTxtPath: String = getClass.getResource("test.txt").getPath
 
+  // TODO extract to CliSpec
   type FixtureParam = String
   def withFixture(test: OneArgTest): Outcome = {
     withFixture(test.toNoArgTest(test.configMap.getRequired[String]("ccwc")))

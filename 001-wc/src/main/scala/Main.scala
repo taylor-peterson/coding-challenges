@@ -65,6 +65,7 @@ object Main extends App {
     )
   }
 
+  // TODO extract
   private def countsFromFile(file: String): Option[Counts] = {
     val path = if (file.startsWith("/")) file else (os.pwd / os.RelPath(file)).toString()
     try {

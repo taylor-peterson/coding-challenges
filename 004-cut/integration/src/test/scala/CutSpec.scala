@@ -1,25 +1,14 @@
-import org.scalatest.{Assertion, Outcome}
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.FixtureAnyWordSpec
-
+import com.github.taylorpeterson.CliSpec
+import org.scalatest.Outcome
 import scala.sys.process._
 
-class CutSpec extends FixtureAnyWordSpec with Matchers {
+class CutSpec extends CliSpec {
   private val sampleTsvPath = getClass.getResource("sample.tsv").getPath
   private val fourChordsCsvPath = getClass.getResource("fourchords.csv").getPath
 
   type FixtureParam = String
   def withFixture(test: OneArgTest): Outcome = {
     withFixture(test.toNoArgTest(test.configMap.getRequired[String]("cut")))
-  }
-
-  def validateCli(command: String, expectedStatus: Int, expectedStdOut: String = "", expectedStdErr: String = ""): Assertion = {
-    val stdout = new StringBuilder
-    val stderr = new StringBuilder
-    val status = command ! ProcessLogger(stdout append _ + "\n", stderr append _ + "\n")
-    status shouldBe expectedStatus
-    stdout.toString shouldBe expectedStdOut
-    stderr.toString shouldBe expectedStdErr
   }
 
   "cut" when {
@@ -42,7 +31,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |
             |Column and field numbering start from 1.
             |""".stripMargin
-        s"$cut -h".!! shouldBe expectedUsage
+        validateCli(s"$cut -h", 0, expectedUsage)
       }
     }
     "provided invalid options" should {
@@ -72,7 +61,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |15
             |20
             |""".stripMargin
-        s"$cut -f 1 $sampleTsvPath".!! shouldBe expectedOutput
+        validateCli(s"$cut -f 1 $sampleTsvPath", 0, expectedOutput)
       }
       "yield f2" in { cut =>
         val expectedOutput =
@@ -83,7 +72,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |16
             |21
             |""".stripMargin
-        s"$cut -f 2 $sampleTsvPath".!! shouldBe expectedOutput
+        validateCli(s"$cut -f 2 $sampleTsvPath", 0, expectedOutput)
       }
     }
     "given a delimiter" should {
@@ -95,7 +84,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |"Adore You"
             |"Africa"
             |""".stripMargin
-        (s"$cut -f 1 -d , $fourChordsCsvPath" #| "head -n5").!! shouldBe expectedOutput
+        validateCli(s"$cut -f 1 -d , $fourChordsCsvPath" #| "head -n5", 0, expectedOutput)
       }
     }
     "given a list of fields" should {
@@ -108,7 +97,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |15\t16
             |20\t21
             |""".stripMargin
-        s"$cut -f 1,2 $sampleTsvPath".!! shouldBe expectedOutput
+        validateCli(s"$cut -f 1,2 $sampleTsvPath", 0, expectedOutput)
       }
       "parse on space correctly" in { cut =>
         val expectedOutput =
@@ -118,7 +107,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |"Adore You",Harry Styles
             |"Africa",Toto
             |""".stripMargin
-        (s"$cut -d , -f \"1,2\" $fourChordsCsvPath" #| "head -n5").!! shouldBe expectedOutput
+        validateCli(s"$cut -d , -f \"1,2\" $fourChordsCsvPath" #| "head -n5", 0, expectedOutput)
       }
       "parse on space and comma, re-order, de-duplicate, and ignore out of bounds fields" in { cut =>
         val expectedOutput =
@@ -142,7 +131,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |"You're Not Sorry",Taylor Swift
             |"Zombie",The Cranberries
             |""".stripMargin
-        (s"tail -n5 $fourChordsCsvPath" #| s"$cut -d , -f \"1,2\"").!! shouldBe expectedOutput
+        validateCli(s"tail -n5 $fourChordsCsvPath" #| s"$cut -d , -f \"1,2\"", 0 , expectedOutput)
       }
     }
     "- is provided as file" should {
@@ -154,7 +143,7 @@ class CutSpec extends FixtureAnyWordSpec with Matchers {
             |"You're Not Sorry",Taylor Swift
             |"Zombie",The Cranberries
             |""".stripMargin
-        (s"tail -n5 $fourChordsCsvPath" #| s"$cut -d , -f \"1 2\" -").!! shouldBe expectedOutput
+        validateCli(s"tail -n5 $fourChordsCsvPath" #| s"$cut -d , -f \"1 2\" -", 0, expectedOutput)
       }
     }
   }

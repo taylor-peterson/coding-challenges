@@ -10,6 +10,7 @@ lazy val ccwc = (project in file("."))
       "com.github.scopt" %% "scopt" % "4.1.0",
       "com.lihaoyi" %% "os-lib" % "0.10.2",
       "org.scalatest" %% "scalatest" % "3.2.19" % "test",
+      "com.github.taylor-peterson" %% "000-core" % "0.1" % "test",
     ),
 
     assembly / test := (Test / test).value,
