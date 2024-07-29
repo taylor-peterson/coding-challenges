@@ -9,6 +9,7 @@ case class Config(
     fields: String = "",
     file: String = "-",
 )
+// baad spealing
 
 case class Selections(lines: List[String] = Nil) {
   private def processLine(config: Config, line: String): Selections = {
