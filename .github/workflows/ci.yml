@@ -30,7 +30,7 @@ jobs:
           sudo chmod 644 /etc/apt/trusted.gpg.d/scalasbt-release.gpg
           sudo apt-get update
           sudo apt-get install sbt
-      - name: Publish - 000-core
+      - name: Publish if changes - 000-core
         if: steps.changed-files.outputs.core_any_changed == 'true'
         run: sbt -v publish
         working-directory: 000-core
