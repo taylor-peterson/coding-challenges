@@ -6,6 +6,8 @@ ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / githubOwner := "taylor-peterson"
 ThisBuild / githubRepository := "coding-challenges"
 
+ThisBuild / pushRemoteCacheConfiguration := pushRemoteCacheConfiguration.value.withOverwrite(true)
+
 val CompileOnly = config("compile-only").hide
 
 lazy val root = (project in file("."))
